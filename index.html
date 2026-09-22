@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DreamDecor — Decoration Management</title>
+<meta name="description" content="DreamDecor — Wedding, Birthday, Corporate & Event Decoration Management. Turning your moments into beautiful memories.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============ TOKENS ============ */
+:root{
+  --cream:#FBF5EC;
+  --cream-2:#F6ECDD;
+  --white:#FFFFFF;
+  --ink:#22302C;
+  --green:#14332D;
+  --green-2:#1E4A40;
+  --gold:#C6A15B;
+  --gold-2:#A87F2F;
+  --muted:#7A7468;
+  --line:#EADFCE;
+  --radius:18px;
+  --shadow:0 10px 30px rgba(20,51,45,.08);
+  --shadow-lg:0 20px 50px rgba(20,51,45,.14);
+  --max:1180px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Poppins',sans-serif;background:var(--cream);color:var(--ink);line-height:1.65;overflow-x:hidden}
+img{max-width:100%;display:block}
+a{text-decoration:none;color:inherit}
+ul{list-style:none}
+section{scroll-margin-top:84px}
+h1,h2,h3,.serif{font-family:'Playfair Display',serif;color:var(--green);line-height:1.25}
+.container{max-width:var(--max);margin:0 auto;padding:0 20px}
+.eyebrow{color:var(--gold-2);font-weight:600;font-size:.8rem;letter-spacing:.18em;text-transform:uppercase}
+.sub{color:var(--muted);font-size:.95rem}
+.center{text-align:center}
+.section{padding:72px 0}
+.sec-head{max-width:640px;margin:0 auto 40px}
+.sec-head h2{font-size:clamp(1.7rem,3.4vw,2.5rem);margin:8px 0 10px}
+
+/* ============ BUTTONS ============ */
+.btn{display:inline-flex;align-items:center;gap:10px;padding:13px 26px;border-radius:999px;font-weight:500;font-size:.92rem;border:1.5px solid transparent;cursor:pointer;transition:.25s;font-family:inherit}
+.btn-primary{background:var(--green);color:#F4EBDD}
+.btn-primary:hover{background:var(--green-2);transform:translateY(-2px);box-shadow:var(--shadow)}
+.btn-gold{background:var(--gold);color:#fff}
+.btn-gold:hover{background:var(--gold-2);transform:translateY(-2px)}
+.btn-outline{border-color:var(--green);color:var(--green);background:transparent}
+.btn-outline:hover{background:var(--green);color:#F4EBDD}
+.btn-light{background:#fff;color:var(--green)}
+.btn-light:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+
+/* ============ SPLASH ============ */
+#splash{position:fixed;inset:0;background:var(--cream);z-index:2000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;transition:opacity .6s,visibility .6s}
+#splash.hide{opacity:0;visibility:hidden}
+#splash .logo-mark{width:84px;height:84px;color:var(--gold);animation:pop 1s ease}
+#splash h1{font-size:1.9rem}
+#splash .tag{color:var(--muted);font-size:.85rem;letter-spacing:.06em}
+#splash .bar{width:120px;height:3px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:8px}
+#splash .bar i{display:block;height:100%;width:40%;background:var(--gold);border-radius:3px;animation:load 1.2s infinite ease-in-out}
+@keyframes load{0%{transform:translateX(-120%)}100%{transform:translateX(320%)}}
+@keyframes pop{0%{transform:scale(.6);opacity:0}100%{transform:scale(1);opacity:1}}
+
+/* ============ HEADER ============ */
+header{position:sticky;top:0;z-index:900;background:rgba(251,245,236,.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;justify-content:space-between;height:70px}
+.brand{display:flex;align-items:center;gap:10px}
+.brand svg{width:34px;height:34px;color:var(--gold)}
+.brand .name{font-family:'Playfair Display',serif;font-weight:700;font-size:1.25rem;color:var(--green)}
+.brand .small{display:block;font-size:.6rem;letter-spacing:.28em;text-transform:uppercase;color:var(--muted)}
+.nav-links{display:flex;gap:26px;font-size:.9rem;font-weight:500}
+.nav-links a{position:relative;padding:6px 0;color:var(--ink)}
+.nav-links a::after{content:"";position:absolute;left:0;bottom:0;height:2px;width:0;background:var(--gold);transition:.3s}
+.nav-links a:hover::after,.nav-links a.active::after{width:100%}
+.nav-cta{display:flex;align-items:center;gap:12px}
+.hamburger{display:none;background:none;border:0;cursor:pointer;padding:6px}
+.hamburger span{display:block;width:24px;height:2px;background:var(--green);margin:5px 0;transition:.3s;border-radius:2px}
+.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.hamburger.open span:nth-child(2){opacity:0}
+.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.mobile-menu{position:fixed;inset:70px 0 auto 0;background:var(--cream);border-bottom:1px solid var(--line);padding:10px 20px 24px;display:none;flex-direction:column;gap:4px;box-shadow:var(--shadow);z-index:890}
+.mobile-menu.show{display:flex}
+.mobile-menu a{padding:12px 8px;border-bottom:1px dashed var(--line);font-weight:500}
+.mobile-menu .btn{margin-top:14px;justify-content:center}
+
+/* ============ HERO ============ */
+.hero{padding:56px 0 72px;background:
+  radial-gradient(600px 300px at 85% 10%,rgba(198,161,91,.12),transparent),
+  var(--cream)}
+.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center}
+.hero h1{font-size:clamp(2.2rem,5vw,3.6rem);margin:14px 0 16px}
+.hero h1 em{font-style:normal;color:var(--gold-2)}
+.hero p{color:var(--muted);max-width:480px}
+.hero-actions{display:flex;gap:14px;flex-wrap:wrap;margin-top:26px}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);padding:7px 16px;border-radius:999px;font-size:.78rem;color:var(--gold-2);font-weight:500;box-shadow:var(--shadow)}
+.hero-stats{display:flex;gap:34px;margin-top:36px;flex-wrap:wrap}
+.hero-stats .num{font-family:'Playfair Display',serif;font-size:1.7rem;color:var(--green);font-weight:700}
+.hero-stats .lbl{font-size:.78rem;color:var(--muted)}
+.hero-art{position:relative}
+.ph{position:relative;overflow:hidden;border-radius:var(--radius);background:linear-gradient(135deg,#F3D9C8,#E4AE9A)}
+.ph::before{content:"";position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='.28'%3E%3Cpath d='M70 14c11 17 11 34 0 51-11-17-11-34 0-51z'/%3E%3Cpath d='M70 78c11 17 11 34 0 51-11-17-11-34 0-51z'/%3E%3Cpath d='M14 70c17-11 34-11 51 0-17 11-34 11-51 0z'/%3E%3Cpath d='M75 70c17-11 34-11 51 0-17 11-34 11-51 0z'/%3E%3C/g%3E%3C/svg%3E");background-size:150px}
+.ph::after{content:"";position:absolute;inset:auto -20% -35% -20%;height:60%;background:radial-gradient(closest-side,rgba(255,255,255,.25),transparent)}
+.ph>*{position:relative;z-index:2}
+.ph-wedding{background:linear-gradient(140deg,#F6D7CB,#D98A96 60%,#B65E72)}
+.ph-birthday{background:linear-gradient(140deg,#FBE3C4,#E9A75B 60%,#C97F2E)}
+.ph-corporate{background:linear-gradient(140deg,#DDE8E4,#7FA398 60%,#3E6157)}
+.ph-baby{background:linear-gradient(140deg,#FBE0EA,#EFA9C4 60%,#C97A9C)}
+.ph-engagement{background:linear-gradient(140deg,#F7ECD4,#DDBE7E 60%,#B08A3E)}
+.ph-anniversary{background:linear-gradient(140deg,#F3CFC4,#C97B62 60%,#93503E)}
+.hero-main{aspect-ratio:4/4.4;box-shadow:var(--shadow-lg)}
+.float-card{position:absolute;background:rgba(255,255,255,.94);border-radius:14px;padding:12px 16px;box-shadow:var(--shadow-lg);display:flex;align-items:center;gap:10px;font-size:.8rem;font-weight:500;z-index:3;animation:float 5s ease-in-out infinite}
+.float-card .ic{width:34px;height:34px;border-radius:10px;background:var(--cream-2);display:grid;place-items:center;color:var(--gold-2)}
+.float-card small{display:block;color:var(--muted);font-weight:400;font-size:.7rem}
+.fc1{top:8%;left:-26px}
+.fc2{bottom:12%;right:-18px;animation-delay:1.4s}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+
+/* ============ QUICK ICONS ============ */
+.quick{background:var(--green);padding:26px 0}
+.quick-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.quick a{display:flex;flex-direction:column;align-items:center;gap:8px;color:#EDE3D2;font-size:.8rem;padding:10px;border-radius:14px;transition:.25s}
+.quick a:hover{background:rgba(255,255,255,.08)}
+.quick .qi{width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);display:grid;place-items:center;color:var(--gold)}
+
+/* ============ SERVICES ============ */
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.svc-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:26px;transition:.3s;position:relative;overflow:hidden}
+.svc-card:hover{transform:translateY(-6px);box-shadow:var(--shadow-lg);border-color:var(--gold)}
+.svc-ic{width:56px;height:56px;border-radius:16px;background:var(--cream-2);display:grid;place-items:center;color:var(--gold-2);margin-bottom:16px}
+.svc-card h3{font-size:1.15rem;margin-bottom:8px}
+.svc-card p{font-size:.88rem;color:var(--muted)}
+.svc-card .link{display:inline-flex;align-items:center;gap:6px;margin-top:14px;color:var(--gold-2);font-size:.85rem;font-weight:500}
+
+/* ============ ABOUT ============ */
+.about{background:linear-gradient(180deg,var(--cream) 0%,#F3E7D3 100%)}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:52px;align-items:center}
+.about-art{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.about-art .ph{aspect-ratio:1/1.15}
+.about-art .ph:nth-child(2){transform:translateY(22px)}
+.about h2{font-size:clamp(1.7rem,3vw,2.4rem);margin:8px 0 14px}
+.about p{color:var(--muted);font-size:.95rem}
+.checks{margin:20px 0 26px;display:grid;gap:10px}
+.checks li{display:flex;gap:10px;align-items:center;font-size:.92rem;font-weight:500}
+.checks .tick{width:22px;height:22px;border-radius:50%;background:var(--green);color:#EFE6D6;display:grid;place-items:center;font-size:.65rem;flex:none}
+.stats-band{background:var(--green);border-radius:var(--radius);padding:34px 26px;display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:56px;text-align:center}
+.stats-band .num{font-family:'Playfair Display',serif;font-size:2rem;color:var(--gold);font-weight:700}
+.stats-band .lbl{color:#D8CFBE;font-size:.8rem}
+
+/* ============ GALLERY ============ */
+.filters{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:30px}
+.chip{padding:9px 20px;border-radius:999px;border:1.5px solid var(--line);background:#fff;font-size:.82rem;font-weight:500;cursor:pointer;transition:.25s;font-family:inherit}
+.chip:hover{border-color:var(--gold)}
+.chip.active{background:var(--green);border-color:var(--green);color:#EFE6D6}
+.gal{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.gal .ph{aspect-ratio:1/1.05;border-radius:14px;cursor:pointer;transition:.35s;display:grid;place-items:center}
+.gal .ph:hover{transform:scale(1.03);box-shadow:var(--shadow-lg)}
+.gal .cap{align-self:end;text-align:center;color:#fff;font-weight:500;font-size:.9rem;text-shadow:0 2px 10px rgba(0,0,0,.25);padding:14px}
+.gal .ph.hide-item{display:none}
+
+/* ============ PACKAGES ============ */
+.pkg{background:#fff;border:1px solid var(--line);border-radius:22px;padding:32px 28px;position:relative;display:flex;flex-direction:column;transition:.3s}
+.pkg:hover{transform:translateY(-6px);box-shadow:var(--shadow-lg)}
+.pkg.featured{background:var(--green);border-color:var(--green);color:#E9E0CF}
+.pkg.featured h3,.pkg.featured .price{color:#F5EDDD}
+.pkg .tag{position:absolute;top:-13px;right:22px;background:var(--gold);color:#fff;font-size:.68rem;font-weight:600;letter-spacing:.08em;padding:5px 14px;border-radius:999px;text-transform:uppercase}
+.pkg h3{font-size:1.25rem}
+.pkg .for{font-size:.8rem;color:var(--muted);margin:4px 0 14px}
+.pkg.featured .for{color:#B9C7C0}
+.pkg .price{font-family:'Playfair Display',serif;font-size:2rem;color:var(--green);font-weight:700}
+.pkg .price span{font-size:.85rem;font-family:'Poppins',sans-serif;color:var(--muted);font-weight:400}
+.pkg.featured .price span{color:#B9C7C0}
+.pkg ul{margin:20px 0 26px;display:grid;gap:10px;flex:1}
+.pkg li{display:flex;gap:10px;font-size:.88rem;align-items:center}
+.pkg li::before{content:"✓";color:var(--gold-2);font-weight:700}
+.pkg.featured li::before{color:var(--gold)}
+.pkg .btn{justify-content:center}
+
+/* ============ EVENTS ============ */
+.events{background:linear-gradient(180deg,var(--cream),#F3E7D3)}
+.event-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px;display:flex;gap:18px;align-items:center;transition:.3s}
+.event-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-4px)}
+.date-box{flex:none;width:74px;background:var(--green);color:#F0E7D6;border-radius:14px;text-align:center;padding:12px 6px}
+.date-box b{display:block;font-family:'Playfair Display',serif;font-size:1.5rem;line-height:1;color:var(--gold)}
+.date-box span{font-size:.72rem;letter-spacing:.1em;text-transform:uppercase}
+.event-card h3{font-size:1.05rem}
+.event-card .meta{font-size:.78rem;color:var(--muted);margin-top:4px;display:flex;gap:14px;flex-wrap:wrap}
+.event-card .go{margin-left:auto;flex:none;width:42px;height:42px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;color:var(--green);transition:.25s;background:none;cursor:pointer}
+.event-card .go:hover{background:var(--green);color:#fff;border-color:var(--green)}
+
+/* ============ TESTIMONIALS ============ */
+.tst{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:28px;position:relative}
+.tst .quote{position:absolute;top:18px;right:24px;font-family:'Playfair Display',serif;font-size:3.4rem;color:var(--cream-2);line-height:1}
+.tst p{font-size:.92rem;color:#4C5A54;margin:12px 0 18px}
+.tst .who{display:flex;gap:12px;align-items:center}
+.avatar{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#E3C98F);display:grid;place-items:center;color:#fff;font-weight:600}
+.stars{color:var(--gold);font-size:.85rem;letter-spacing:2px}
+.tst .who b{font-size:.92rem;color:var(--green)}
+.tst .who small{color:var(--muted);font-size:.75rem;display:block}
+
+/* ============ BLOG ============ */
+.blog-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;transition:.3s;display:flex;flex-direction:column}
+.blog-card:hover{transform:translateY(-6px);box-shadow:var(--shadow-lg)}
+.blog-card .ph{aspect-ratio:16/9;border-radius:0}
+.blog-body{padding:22px;display:flex;flex-direction:column;flex:1}
+.blog-body .meta{display:flex;gap:12px;font-size:.72rem;color:var(--muted);margin-bottom:8px}
+.blog-body .meta .pill{background:var(--cream-2);color:var(--gold-2);padding:3px 12px;border-radius:999px;font-weight:500}
+.blog-body h3{font-size:1.05rem;margin-bottom:8px}
+.blog-body p{font-size:.85rem;color:var(--muted);flex:1}
+.blog-body .link{margin-top:14px;color:var(--gold-2);font-weight:500;font-size:.85rem;display:inline-flex;gap:6px;align-items:center}
+
+/* ============ CONTACT ============ */
+.contact{background:var(--green);color:#E9E0CF}
+.contact h2,.contact h3{color:#F5EDDD}
+.contact .eyebrow{color:var(--gold)}
+.contact-grid{display:grid;grid-template-columns:1fr 1.1fr;gap:48px}
+.c-item{display:flex;gap:14px;align-items:flex-start;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);padding:16px;border-radius:14px;margin-bottom:14px}
+.c-item .ic{width:42px;height:42px;flex:none;border-radius:12px;background:rgba(198,161,91,.15);color:var(--gold);display:grid;place-items:center}
+.c-item b{display:block;font-size:.9rem;color:#F5EDDD}
+.c-item span{font-size:.82rem;color:#BECBC5}
+.form-card{background:#fff;border-radius:22px;padding:34px;color:var(--ink)}
+.form-card h3{color:var(--green);margin-bottom:6px}
+.f-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:.78rem;font-weight:500;margin-bottom:6px;color:#555}
+.field input,.field textarea,.field select{width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;font-family:inherit;font-size:.88rem;background:var(--cream);transition:.25s;color:var(--ink)}
+.field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:var(--gold);background:#fff;box-shadow:0 0 0 3px rgba(198,161,91,.15)}
+.form-card .btn{width:100%;justify-content:center}
+.form-note{font-size:.75rem;color:var(--muted);text-align:center;margin-top:10px}
+
+/* ============ CTA BAND ============ */
+.cta-band{background:linear-gradient(120deg,var(--green-2),var(--green));border-radius:26px;padding:52px 40px;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;color:#EDE4D3;position:relative;overflow:hidden}
+.cta-band::before{content:"";position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='.07'%3E%3Cpath d='M70 14c11 17 11 34 0 51-11-17-11-34 0-51z'/%3E%3Cpath d='M70 78c11 17 11 34 0 51-11-17-11-34 0-51z'/%3E%3C/g%3E%3C/svg%3E");background-size:140px}
+.cta-band h2{color:#fff;font-size:clamp(1.5rem,3vw,2.1rem);margin-bottom:6px}
+.cta-band>*{position:relative}
+
+/* ============ FOOTER ============ */
+footer{background:var(--green);color:#C9D3CE;padding:64px 0 0;font-size:.88rem}
+.f-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1.3fr;gap:36px;padding-bottom:44px}
+footer h4{color:#F5EDDD;font-size:.95rem;margin-bottom:16px;font-weight:600}
+footer .brand .name{color:#F5EDDD}
+footer .brand .small{color:#9FB0A8}
+footer a:hover{color:var(--gold)}
+.f-links{display:grid;gap:10px}
+.socials{display:flex;gap:10px;margin-top:18px}
+.socials a{width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.18);display:grid;place-items:center;color:#EDE4D3;transition:.25s}
+.socials a:hover{background:var(--gold);border-color:var(--gold);color:#fff}
+.news{display:flex;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:999px;padding:5px;margin-top:14px}
+.news input{flex:1;background:none;border:0;color:#fff;padding:8px 14px;font-family:inherit;font-size:.85rem;min-width:0}
+.news input:focus{outline:none}
+.news button{background:var(--gold);border:0;color:#fff;width:40px;height:40px;border-radius:50%;cursor:pointer;flex:none;transition:.25s}
+.news button:hover{background:var(--gold-2)}
+.f-bottom{border-top:1px solid rgba(255,255,255,.1);padding:20px 0;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:.78rem;color:#93A49D}
+
+/* ============ BOTTOM NAV (mobile) ============ */
+.bottom-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);z-index:900;padding:8px 6px calc(8px + env(safe-area-inset-bottom));box-shadow:0 -8px 24px rgba(20,51,45,.08)}
+.bottom-nav ul{display:grid;grid-template-columns:repeat(5,1fr)}
+.bottom-nav a{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:.62rem;color:var(--muted);font-weight:500}
+.bottom-nav a svg{width:20px;height:20px}
+.bottom-nav a.active{color:var(--gold-2)}
+
+/* ============ MODAL (Login/Register) ============ */
+.modal{position:fixed;inset:0;background:rgba(20,30,27,.55);backdrop-filter:blur(4px);z-index:1500;display:none;align-items:center;justify-content:center;padding:20px}
+.modal.show{display:flex}
+.modal-card{background:var(--cream);border-radius:24px;max-width:420px;width:100%;padding:36px 32px;position:relative;max-height:92vh;overflow:auto;animation:pop .3s ease}
+.modal-card .close{position:absolute;top:16px;right:16px;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:#fff;cursor:pointer;font-size:1rem;color:var(--muted)}
+.auth-tabs{display:grid;grid-template-columns:1fr 1fr;background:var(--cream-2);border-radius:999px;padding:5px;margin:18px 0 22px}
+.auth-tabs button{border:0;background:none;padding:9px;border-radius:999px;font-family:inherit;font-weight:500;font-size:.85rem;cursor:pointer;color:var(--muted)}
+.auth-tabs button.active{background:var(--green);color:#EFE6D6}
+.auth-form{display:none}
+.auth-form.show{display:block}
+.auth-alt{text-align:center;font-size:.8rem;color:var(--muted);margin-top:16px}
+.auth-alt a{color:var(--gold-2);font-weight:500}
+.divider{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:.72rem;margin:16px 0}
+.divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--line)}
+.soc-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;padding:11px;border-radius:12px;border:1.5px solid var(--line);background:#fff;font-family:inherit;font-size:.85rem;font-weight:500;cursor:pointer;margin-bottom:10px}
+
+/* ============ REVEAL ANIMATION ============ */
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s ease}
+.reveal.in{opacity:1;transform:none}
+
+/* ============ RESPONSIVE ============ */
+@media(max-width:1024px){
+  .grid-3{grid-template-columns:repeat(2,1fr)}
+  .gal{grid-template-columns:repeat(3,1fr)}
+  .f-grid{grid-template-columns:1fr 1fr}
+  .hero-grid{gap:34px}
+}
+@media(max-width:820px){
+  .nav-links,.nav-cta .btn{display:none}
+  .hamburger{display:block}
+  .hero-grid,.about-grid,.contact-grid{grid-template-columns:1fr}
+  .hero-art{max-width:520px;margin:0 auto}
+  .about-art .ph:nth-child(2){transform:none}
+  .stats-band{grid-template-columns:repeat(3,1fr);padding:26px 16px}
+  .bottom-nav{display:block}
+  body{padding-bottom:64px}
+  .float-card{display:none}
+  .section{padding:56px 0}
+}
+@media(max-width:560px){
+  .grid-3{grid-template-columns:1fr}
+  .gal{grid-template-columns:repeat(2,1fr)}
+  .quick-row{grid-template-columns:repeat(4,1fr);gap:6px}
+  .f-grid{grid-template-columns:1fr}
+  .f-row{grid-template-columns:1fr}
+  .event-card{flex-wrap:wrap}
+  .event-card .go{margin-left:auto}
+  .hero-stats{gap:22px}
+  .cta-band{padding:38px 24px}
+}
+</style>
+</head>
+<body>
+
+<!-- ================= SPLASH ================= -->
+<div id="splash">
+  <svg class="logo-mark" viewBox="0 0 64 64" fill="currentColor"><path d="M32 6c4.5 8 4.5 16 0 25-4.5-9-4.5-17 0-25z" opacity=".9"/><path d="M15 19c8 2 14 8 17 17-9.5.5-16.5-5-17-17z" opacity=".75"/><path d="M49 19c-8 2-14 8-17 17 9.5.5 16.5-5 17-17z" opacity=".75"/><path d="M7 34c7.5-.5 14.5 3 20 10-8 3.5-16-.5-20-10z" opacity=".6"/><path d="M57 34c-7.5-.5-14.5 3-20 10 8 3.5 16-.5 20-10z" opacity=".6"/><path d="M32 38c3 7 3 13 0 21-3-8-3-14 0-21z"/></svg>
+  <h1>DreamDecor</h1>
+  <p class="tag">Decoration Management</p>
+  <div class="bar"><i></i></div>
+  <p class="tag" style="font-size:.72rem">Loading…</p>
+</div>
+
+<!-- ================= HEADER ================= -->
+<header>
+  <div class="container nav">
+    <a href="#home" class="brand">
+      <svg viewBox="0 0 64 64" fill="currentColor"><path d="M32 6c4.5 8 4.5 16 0 25-4.5-9-4.5-17 0-25z"/><path d="M15 19c8 2 14 8 17 17-9.5.5-16.5-5-17-17z" opacity=".8"/><path d="M49 19c-8 2-14 8-17 17 9.5.5 16.5-5 17-17z" opacity=".8"/><path d="M7 34c7.5-.5 14.5 3 20 10-8 3.5-16-.5-20-10z" opacity=".6"/><path d="M57 34c-7.5-.5-14.5 3-20 10 8 3.5 16-.5 20-10z" opacity=".6"/><path d="M32 38c3 7 3 13 0 21-3-8-3-14 0-21z"/></svg>
+      <span><span class="name">DreamDecor</span><span class="small">Decoration Management</span></span>
+    </a>
+    <nav class="nav-links">
+      <a href="#home" class="active">Home</a>
+      <a href="#about">About</a>
+      <a href="#services">Services</a>
+      <a href="#gallery">Gallery</a>
+      <a href="#packages">Packages</a>
+      <a href="#blog">Blog</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <div class="nav-cta">
+      <button class="btn btn-primary" onclick="openAuth('login')">Login / Sign Up</button>
+      <button class="hamburger" id="hamburger" aria-label="Menu"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#home">Home</a>
+    <a href="#about">About Us</a>
+    <a href="#services">Our Services</a>
+    <a href="#gallery">Gallery</a>
+    <a href="#packages">Packages</a>
+    <a href="#events">Events</a>
+    <a href="#blog">Blog</a>
+    <a href="#contact">Contact</a>
+    <button class="btn btn-primary" onclick="openAuth('login')">Login / Sign Up</button>
+  </div>
+</header>
+
+<main>
+<!-- ================= HERO ================= -->
+<section class="hero" id="home">
+  <div class="container hero-grid">
+    <div class="reveal">
+      <span class="hero-badge">✨ Trusted by 500+ happy clients</span>
+      <h1>Beautiful Spaces<br>for <em>Special Moments</em></h1>
+      <p>Wedding | Events | Corporate | More — We bring your vision to life with creative designs, premium decor and flawless execution.</p>
+      <div class="hero-actions">
+        <a href="#services" class="btn btn-primary">Explore Our Services →</a>
+        <a href="#gallery" class="btn btn-outline">View Gallery</a>
+      </div>
+      <div class="hero-stats">
+        <div><div class="num" data-count="10">0</div><div class="lbl">Years Experience</div></div>
+        <div><div class="num" data-count="500">0</div><div class="lbl">Happy Clients</div></div>
+        <div><div class="num" data-count="1000">0</div><div class="lbl">Events Completed</div></div>
+      </div>
+    </div>
+    <div class="hero-art reveal">
+      <div class="ph ph-wedding hero-main"></div>
+      <div class="float-card fc1"><span class="ic">💍</span><span>Wedding Decor<small>Mandap • Stage • Flowers</small></span></div>
+      <div class="float-card fc2"><span class="ic">🎉</span><span>500+ Events<small>Successfully Delivered</small></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= QUICK ICONS ================= -->
+<div class="quick">
+  <div class="container quick-row">
+    <a href="#services"><span class="qi">💍</span>Wedding</a>
+    <a href="#services"><span class="qi">🎂</span>Birthday</a>
+    <a href="#services"><span class="qi">🏢</span>Corporate</a>
+    <a href="#services"><span class="qi">✨</span>More</a>
+  </div>
+</div>
+
+<!-- ================= SERVICES ================= -->
+<section class="section" id="services">
+  <div class="container">
+    <div class="sec-head center reveal">
+      <span class="eyebrow">What We Do</span>
+      <h2>Our Services</h2>
+      <p class="sub">We Make Every Event Special — custom decoration packages available.</p>
+    </div>
+    <div class="grid-3">
+      <div class="svc-card reveal"><div class="svc-ic">💍</div><h3>Wedding Decoration</h3><p>Elegant designs for your special day — mandap, stage, flowers, lighting & ambience.</p><a href="#packages" class="link">Explore →</a></div>
+      <div class="svc-card reveal"><div class="svc-ic">🎂</div><h3>Birthday Decoration</h3><p>Themes, balloons, backdrops and photo zones that make every birthday magical.</p><a href="#packages" class="link">Explore →</a></div>
+      <div class="svc-card reveal"><div class="svc-ic">🏢</div><h3>Corporate Events</h3><p>Professional stage design, branding and ambience for conferences & launches.</p><a href="#packages" class="link">Explore →</a></div>
+      <div class="svc-card reveal"><div class="svc-ic">👶</div><h3>Baby Shower</h3><p>Soft pastel themes and charming setups to welcome your little one.</p><a href="#packages" class="link">Explore →</a></div>
+      <div class="svc-card reveal"><div class="svc-ic">💐</div><h3>Engagement Decoration</h3><p>Romantic ring ceremony decor with floral rings, aisles and elegant lighting.</p><a href="#packages" class="link">Explore →</a></div>
+      <div class="svc-card reveal" style="background:var(--green);border-color:var(--green)"><div class="svc-ic" style="background:rgba(255,255,255,.1);color:var(--gold)">💌</div><h3 style="color:#F5EDDD">Custom Packages</h3><p style="color:#BECBC5">Available — tell us your idea and budget, we'll craft it perfectly.</p><a href="#contact" class="link" style="color:var(--gold)">Get a Quote →</a></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ABOUT ================= -->
+<section class="section about" id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-art reveal">
+        <div class="ph ph-wedding"></div>
+        <div class="ph ph-engagement"></div>
+        <div class="ph ph-birthday"></div>
+        <div class="ph ph-corporate"></div>
+      </div>
+      <div class="reveal">
+        <span class="eyebrow">About Us</span>
+        <h2>Crafting Beautiful Moments</h2>
+        <p>DreamDecor is a professional decoration management company specializing in wedding, birthday, corporate and all types of events. We bring your vision to life with creative designs, premium decor and flawless execution.</p>
+        <ul class="checks">
+          <li><span class="tick">✓</span>Creative & Unique Designs</li>
+          <li><span class="tick">✓</span>Premium Quality Materials</li>
+          <li><span class="tick">✓</span>On-Time Execution</li>
+          <li><span class="tick">✓</span>Dedicated Support Team</li>
+        </ul>
+        <a href="#contact" class="btn btn-primary">Get In Touch →</a>
+      </div>
+    </div>
+    <div class="stats-band reveal">
+      <div><div class="num" data-count="10">0</div><div class="lbl">Years Experience</div></div>
+      <div><div class="num" data-count="500">0</div><div class="lbl">Happy Clients</div></div>
+      <div><div class="num" data-count="1000">0</div><div class="lbl">Events Completed</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= GALLERY ================= -->
+<section class="section" id="gallery">
+  <div class="container">
+    <div class="sec-head center reveal">
+      <span class="eyebrow">Portfolio</span>
+      <h2>Our Gallery</h2>
+      <p class="sub">A glimpse of our work</p>
+    </div>
+    <div class="filters reveal" id="galFilters">
+      <button class="chip active" data-f="all">All</button>
+      <button class="chip" data-f="wedding">Wedding</button>
+      <button class="chip" data-f="birthday">Birthday</button>
+      <button class="chip" data-f="corporate">Corporate</button>
+      <button class="chip" data-f="other">Other</button>
+    </div>
+    <div class="gal reveal" id="gal">
+      <div class="ph ph-wedding" data-cat="wedding"><span class="cap">Royal Mandap Decor</span></div>
+      <div class="ph ph-engagement" data-cat="other"><span class="cap">Engagement Ring Setup</span></div>
+      <div class="ph ph-birthday" data-cat="birthday"><span class="cap">Kids Theme Birthday</span></div>
+      <div class="ph ph-corporate" data-cat="corporate"><span class="cap">Corporate Gala Stage</span></div>
+      <div class="ph ph-wedding" data-cat="wedding"><span class="cap">Floral Reception</span></div>
+      <div class="ph ph-baby" data-cat="other"><span class="cap">Baby Shower Pastels</span></div>
+      <div class="ph ph-wedding" data-cat="wedding"><span class="cap">Haldi Ceremony</span></div>
+      <div class="ph ph-anniversary" data-cat="other"><span class="cap">Anniversary Dinner</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PACKAGES ================= -->
+<section class="section" id="packages" style="background:var(--cream-2)">
+  <div class="container">
+    <div class="sec-head center reveal">
+      <span class="eyebrow">Pricing</span>
+      <h2>Our Packages</h2>
+      <p class="sub">Choose what suits you</p>
+    </div>
+    <div class="grid-3">
+      <div class="pkg reveal">
+        <h3>Basic</h3><p class="for">Perfect for small gatherings</p>
+        <div class="price">₹ 15,000<span>+ onwards</span></div>
+        <ul><li>Simple Decor</li><li>Basic Lighting</li><li>Setup & Cleanup</li></ul>
+        <button class="btn btn-outline" onclick="openAuth('register')">Get Started</button>
+      </div>
+      <div class="pkg featured reveal">
+        <span class="tag">Most Popular</span>
+        <h3>Premium</h3><p class="for">For a grand experience</p>
+        <div class="price">₹ 35,000<span>+ onwards</span></div>
+        <ul><li>Premium Decor</li><li>Lighting & Sound</li><li>Dedicated Team</li></ul>
+        <button class="btn btn-gold" onclick="openAuth('register')">Get Started</button>
+      </div>
+      <div class="pkg reveal">
+        <h3>Luxury</h3><p class="for">For a royal celebration</p>
+        <div class="price">Custom<span> quote</span></div>
+        <ul><li>Custom Design</li><li>Premium Flowers</li><li>Full Event Management</li></ul>
+        <button class="btn btn-outline" onclick="openAuth('register')">Get Started</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= EVENTS ================= -->
+<section class="section events" id="events">
+  <div class="container">
+    <div class="sec-head center reveal">
+      <span class="eyebrow">Upcoming</span>
+      <h2>Our Events</h2>
+      <p class="sub">Moments we've created — join our next showcase</p>
+    </div>
+    <div class="grid-3" style="grid-template-columns:1fr">
+      <div class="event-card reveal">
+        <div class="date-box"><b>25</b><span>May</span></div>
+        <div><h3>Bridal Wedding Showcase</h3><div class="meta"><span>📍 Chennai</span><span>💍 Wedding</span></div></div>
+        <button class="go" aria-label="View">→</button>
+      </div>
+      <div class="event-card reveal">
+        <div class="date-box"><b>12</b><span>Apr</span></div>
+        <div><h3>Annual Corporate Summit Decor</h3><div class="meta"><span>📍 Hyderabad</span><span>🏢 Corporate</span></div></div>
+        <button class="go" aria-label="View">→</button>
+      </div>
+      <div class="event-card reveal">
+        <div class="date-box"><b>08</b><span>Mar</span></div>
+        <div><h3>Birthday Carnival Special</h3><div class="meta"><span>📍 Bangalore</span><span>🎂 Birthday</span></div></div>
+        <button class="go" aria-label="View">→</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= TESTIMONIALS ================= -->
+<section class="section" id="testimonials">
+  <div class="container">
+    <div class="sec-head center reveal">
+      <span class="eyebrow">Testimonials</span>
+      <h2>What Our Clients Say</h2>
+      <p class="sub">Real stories, happy moments</p>
+    </div>
+    <div class="grid-3">
+      <div class="tst reveal"><span class="quote">"</span>
+        <div class="stars">★★★★★</div>
+        <p>"DreamDecor made our wedding magical. Every detail was perfect. Highly recommended!"</p>
+        <div class="who"><div class="avatar">PA</div><div><b>Priya & Arjun</b><small>Wedding Decoration</small></div></div>
+      </div>
+      <div class="tst reveal"><span class="quote">"</span>
+        <div class="stars">★★★★★</div>
+        <p>"Professional team, creative ideas and flawless execution. Our event was a huge success!"</p>
+        <div class="who"><div class="avatar">SK</div><div><b>Suresh Kumar</b><small>Corporate Event</small></div></div>
+      </div>
+      <div class="tst reveal"><span class="quote">"</span>
+        <div class="stars">★★★★★</div>
+        <p>"Beautiful decor and great service. Our daughter's birthday was truly special!"</p>
+        <div class="who"><div class="avatar">AR</div><div><b>Anitha Ramesh</b><small>Birthday Party</small></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= BLOG ================= -->
+<section class="section" id="blog" style="background:var(--cream-2)">
+  <div class="container">
+    <div class="sec-head center reveal">
+      <span class="eyebrow">Our Blog</span>
+      <h2>Tips, Ideas & Inspiration</h2>
+    </div>
+    <div class="grid-3">
+      <article class="blog-card reveal">
+        <div class="ph ph-wedding"></div>
+        <div class="blog-body">
+          <div class="meta"><span class="pill">Wedding</span><span>10 May 2025</span></div>
+          <h3>Top 10 Wedding Decor Ideas for 2025</h3>
+          <p>From pastel mandaps to hanging florals — the trends defining weddings this year.</p>
+          <a href="#" class="link">Read More →</a>
+        </div>
+      </article>
+      <article class="blog-card reveal">
+        <div class="ph ph-corporate"></div>
+        <div class="blog-body">
+          <div class="meta"><span class="pill">Events</span><span>28 Apr 2025</span></div>
+          <h3>How to Choose the Right Theme for Your Event</h3>
+          <p>A simple framework to pick a theme that matches your vibe, venue and budget.</p>
+          <a href="#" class="link">Read More →</a>
+        </div>
+      </article>
+      <article class="blog-card reveal">
+        <div class="ph ph-birthday"></div>
+        <div class="blog-body">
+          <div class="meta"><span class="pill">Decor Tips</span><span>15 Apr 2025</span></div>
+          <h3>Flower Decoration Ideas for Home Events</h3>
+          <p>Budget-friendly floral styling tricks that look luxurious without the cost.</p>
+          <a href="#" class="link">Read More →</a>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CTA ================= -->
+<section class="section">
+  <div class="container">
+    <div class="cta-band reveal">
+      <div>
+        <h2>Ready to Plan Your Event?</h2>
+        <p style="color:#C6D2CC;font-size:.92rem">Custom decoration packages available — get your free quote today.</p>
+      </div>
+      <a href="#contact" class="btn btn-gold">Get a Quote →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CONTACT ================= -->
+<section class="section contact" id="contact">
+  <div class="container contact-grid">
+    <div class="reveal">
+      <span class="eyebrow">Contact Us</span>
+      <h2>Get In Touch</h2>
+      <p class="sub" style="color:#BECBC5;margin-bottom:26px">We'd love to hear from you</p>
+      <div class="c-item"><span class="ic">📞</span><div><b>+91 98765 43210</b><span>Call Us</span></div></div>
+      <div class="c-item"><span class="ic">💬</span><div><b>+91 98765 43210</b><span>WhatsApp</span></div></div>
+      <div class="c-item"><span class="ic">✉️</span><div><b>info@dreamdecor.com</b><span>Email Us</span></div></div>
+      <div class="c-item"><span class="ic">📍</span><div><b>123 Celebration Street, Chennai – 600001</b><span>Visit Us</span></div></div>
+    </div>
+    <div class="form-card reveal">
+      <h3>Send a Message</h3>
+      <p class="sub" style="font-size:.82rem;margin-bottom:18px">Fill the form and our team will respond within 24 hours.</p>
+      <form id="contactForm">
+        <div class="f-row">
+          <div class="field"><label>Full Name</label><input type="text" placeholder="Your name" required></div>
+          <div class="field"><label>Phone Number</label><input type="tel" placeholder="Enter phone number" required></div>
+        </div>
+        <div class="f-row">
+          <div class="field"><label>Email</label><input type="email" placeholder="Enter your email" required></div>
+          <div class="field"><label>Event Type</label>
+            <select><option>Wedding</option><option>Birthday</option><option>Corporate</option><option>Baby Shower</option><option>Engagement</option><option>Other</option></select>
+          </div>
+        </div>
+        <div class="field"><label>Message</label><textarea rows="4" placeholder="Tell us about your event…" required></textarea></div>
+        <button type="submit" class="btn btn-primary">Send Message ➤</button>
+        <p class="form-note" id="formNote"></p>
+      </form>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ================= FOOTER ================= -->
+<footer>
+  <div class="container f-grid">
+    <div>
+      <a href="#home" class="brand" style="margin-bottom:14px">
+        <svg viewBox="0 0 64 64" fill="var(--gold)" style="width:34px;height:34px"><path d="M32 6c4.5 8 4.5 16 0 25-4.5-9-4.5-17 0-25z"/><path d="M15 19c8 2 14 8 17 17-9.5.5-16.5-5-17-17z" opacity=".8"/><path d="M49 19c-8 2-14 8-17 17 9.5.5 16.5-5 17-17z" opacity=".8"/><path d="M7 34c7.5-.5 14.5 3 20 10-8 3.5-16-.5-20-10z" opacity=".6"/><path d="M57 34c-7.5-.5-14.5 3-20 10 8 3.5-16-.5-20-10z" opacity=".6"/><path d="M32 38c3 7 3 13 0 21-3-8-3-14 0-21z"/></svg>
+        <span><span class="name">DreamDecor</span><span class="small">Decoration Management</span></span>
+      </a>
+      <p style="color:var(--gold);font-size:.85rem;margin-top:6px">Beautiful Spaces. Happy Moments.</p>
+      <div class="socials">
+        <a href="#" aria-label="Facebook">f</a>
+        <a href="#" aria-label="Instagram">◎</a>
+        <a href="#" aria-label="YouTube">▶</a>
+        <a href="#" aria-label="X">𝕏</a>
+        <a href="#" aria-label="LinkedIn">in</a>
+      </div>
+    </div>
+    <div>
+      <h4>Quick Links</h4>
+      <div class="f-links"><a href="#home">Home</a><a href="#services">Services</a><a href="#gallery">Gallery</a><a href="#about">About Us</a><a href="#contact">Contact</a></div>
+    </div>
+    <div>
+      <h4>Our Services</h4>
+      <div class="f-links"><a href="#services">Wedding Decor</a><a href="#services">Birthday Decor</a><a href="#services">Corporate Events</a><a href="#services">Baby Shower</a><a href="#services">Engagement Decor</a></div>
+    </div>
+    <div>
+      <h4>Newsletter</h4>
+      <p style="font-size:.82rem">Subscribe for latest updates & offers.</p>
+      <form class="news" id="newsForm"><input type="email" placeholder="Enter your email" required><button type="submit">➤</button></form>
+      <p id="newsNote" style="font-size:.75rem;color:var(--gold);margin-top:8px"></p>
+    </div>
+  </div>
+  <div class="container f-bottom">
+    <span>© 2025 DreamDecor. All rights reserved.</span>
+    <span>Privacy Policy · Terms & Conditions</span>
+  </div>
+</footer>
+
+<!-- ================= MOBILE BOTTOM NAV ================= -->
+<nav class="bottom-nav">
+  <ul>
+    <li><a href="#home" class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 10l9-7 9 7v10a1 1 0 01-1 1h-5v-6h-6v6H4a1 1 0 01-1-1z"/></svg>Home</a></li>
+    <li><a href="#services"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>Services</a></li>
+    <li><a href="#gallery"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="9" cy="9" r="2"/><path d="M21 15l-5-5-11 11"/></svg>Gallery</a></li>
+    <li><a href="#about"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 5-5 8-5s6.5 1 8 5"/></svg>About</a></li>
+    <li><a href="#contact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H8l-5 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Contact</a></li>
+  </ul>
+</nav>
+
+<!-- ================= AUTH MODAL ================= -->
+<div class="modal" id="authModal">
+  <div class="modal-card">
+    <button class="close" onclick="closeAuth()">✕</button>
+    <div class="center">
+      <svg viewBox="0 0 64 64" fill="var(--gold)" style="width:48px;height:48px;margin:0 auto"><path d="M32 6c4.5 8 4.5 16 0 25-4.5-9-4.5-17 0-25z"/><path d="M15 19c8 2 14 8 17 17-9.5.5-16.5-5-17-17z" opacity=".8"/><path d="M49 19c-8 2-14 8-17 17 9.5.5 16.5-5 17-17z" opacity=".8"/><path d="M7 34c7.5-.5 14.5 3 20 10-8 3.5-16-.5-20-10z" opacity=".6"/><path d="M57 34c-7.5-.5-14.5 3-20 10 8 3.5 16-.5 20-10z" opacity=".6"/><path d="M32 38c3 7 3 13 0 21-3-8-3-14 0-21z"/></svg>
+      <h2 class="serif" style="margin-top:8px">Welcome Back</h2>
+      <p class="sub" style="font-size:.82rem">Login to your account or join us & get started</p>
+    </div>
+    <div class="auth-tabs">
+      <button id="tabLogin" class="active" onclick="switchAuth('login')">Login</button>
+      <button id="tabRegister" onclick="switchAuth('register')">Register</button>
+    </div>
+
+    <form class="auth-form show" id="formLogin">
+      <div class="field"><label>Email or Phone</label><input type="text" placeholder="Enter your email or phone" required></div>
+      <div class="field"><label>Password</label><input type="password" placeholder="Enter your password" required></div>
+      <div style="display:flex;justify-content:space-between;font-size:.78rem;margin-bottom:16px">
+        <label><input type="checkbox" checked> Remember me</label>
+        <a href="#" style="color:var(--gold-2);font-weight:500">Forgot Password?</a>
+      </div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center">Login</button>
+      <div class="divider">or continue with</div>
+      <button type="button" class="soc-btn">G&nbsp; Continue with Google</button>
+      <button type="button" class="soc-btn">f&nbsp; Continue with Facebook</button>
+      <p class="auth-alt">Don't have an account? <a href="#" onclick="switchAuth('register');return false">Sign Up</a></p>
+    </form>
+
+    <form class="auth-form" id="formRegister">
+      <div class="auth-tabs" style="margin:0 0 16px">
+        <button type="button" class="active">Individual</button>
+        <button type="button">Business</button>
+      </div>
+      <div class="field"><label>Full Name</label><input type="text" placeholder="Enter your name" required></div>
+      <div class="field"><label>Email</label><input type="email" placeholder="Enter your email" required></div>
+      <div class="field"><label>Phone Number</label><input type="tel" placeholder="Enter your phone number" required></div>
+      <div class="field"><label>Password</label><input type="password" placeholder="Create a password" required></div>
+      <label style="font-size:.78rem;display:flex;gap:8px;margin-bottom:16px"><input type="checkbox" required> I agree to the <a href="#" style="color:var(--gold-2)">Terms & Conditions</a></label>
+      <button class="btn btn-primary" style="width:100%;justify-content:center">Register</button>
+      <p class="auth-alt">Already have an account? <a href="#" onclick="switchAuth('login');return false">Login</a></p>
+    </form>
+  </div>
+</div>
+
+<script>
+/* ---------- Splash ---------- */
+window.addEventListener('load',()=>setTimeout(()=>document.getElementById('splash').classList.add('hide'),1400));
+
+/* ---------- Mobile menu ---------- */
+const ham=document.getElementById('hamburger'),mm=document.getElementById('mobileMenu');
+ham.addEventListener('click',()=>{ham.classList.toggle('open');mm.classList.toggle('show')});
+mm.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{ham.classList.remove('open');mm.classList.remove('show')}));
+
+/* ---------- Reveal on scroll ---------- */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.12});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+/* ---------- Counters ---------- */
+const cio=new IntersectionObserver(es=>es.forEach(e=>{
+  if(!e.isIntersecting)return;
+  const el=e.target,target=+el.dataset.count;let cur=0;
+  const step=Math.ceil(target/60);
+  const t=setInterval(()=>{cur+=step;if(cur>=target){cur=target;clearInterval(t)}el.textContent=cur+'+'},25);
+  cio.unobserve(el);
+}),{threshold:.5});
+document.querySelectorAll('[data-count]').forEach(el=>cio.observe(el));
+
+/* ---------- Gallery filter ---------- */
+document.getElementById('galFilters').addEventListener('click',e=>{
+  const b=e.target.closest('.chip');if(!b)return;
+  document.querySelectorAll('#galFilters .chip').forEach(c=>c.classList.remove('active'));
+  b.classList.add('active');
+  const f=b.dataset.f;
+  document.querySelectorAll('#gal .ph').forEach(p=>{
+    p.classList.toggle('hide-item',f!=='all'&&p.dataset.cat!==f);
+  });
+});
+
+/* ---------- Contact / newsletter ---------- */
+document.getElementById('contactForm').addEventListener('submit',e=>{
+  e.preventDefault();document.getElementById('formNote').textContent='✓ Thank you! We will contact you within 24 hours.';e.target.reset();
+});
+document.getElementById('newsForm').addEventListener('submit',e=>{
+  e.preventDefault();document.getElementById('newsNote').textContent='✓ Subscribed successfully!';e.target.reset();
+});
+
+/* ---------- Auth modal ---------- */
+function openAuth(tab){document.getElementById('authModal').classList.add('show');switchAuth(tab);document.body.style.overflow='hidden'}
+function closeAuth(){document.getElementById('authModal').classList.remove('show');document.body.style.overflow=''}
+function switchAuth(tab){
+  document.getElementById('formLogin').classList.toggle('show',tab==='login');
+  document.getElementById('formRegister').classList.toggle('show',tab==='register');
+  document.getElementById('tabLogin').classList.toggle('active',tab==='login');
+  document.getElementById('tabRegister').classList.toggle('active',tab==='register');
+}
+document.getElementById('authModal').addEventListener('click',e=>{if(e.target.id==='authModal')closeAuth()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeAuth()});
+
+/* ---------- Scroll spy (nav highlight) ---------- */
+const secs=[...document.querySelectorAll('section[id]')];
+const links=[...document.querySelectorAll('.nav-links a')];
+window.addEventListener('scroll',()=>{
+  const y=scrollY+120;
+  let cur=secs[0].id;
+  secs.forEach(s=>{if(s.offsetTop<=y)cur=s.id});
+  links.forEach(l=>l.classList.toggle('active',l.getAttribute('href')==='#'+cur));
+},{passive:true});
+</script>
+</body>
+</html>
