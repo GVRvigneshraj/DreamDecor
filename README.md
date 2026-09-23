@@ -88,9 +88,9 @@ All `<img>` tags still keep `onerror="this.remove()"` as a safety net.
 
 Filters: All · Wedding · Birthday · Baby Shower · Corporate.
 
-## Services cards (photo backgrounds)
+## Services cards (emoji icons)
 
-All 6 service cards use full-bleed photo backgrounds with dark gradient overlay + white text (no emoji icons). Images live in `assets/images/services/` (4:3, watermark cropped).
+All 6 service cards use attractive emoji icon badges (👰 🎈 🎤 🍼 💍 🎨) on light tinted cards — no photo backgrounds. Each card has a colored gradient emoji tile, hover lift and gold accent border.
 
 ## AI Preview — Decor My Hall (`#ai-preview`)
 

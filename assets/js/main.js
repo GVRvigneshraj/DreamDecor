@@ -1,10 +1,16 @@
 /* ---------- Splash ---------- */
 window.addEventListener('load',()=>setTimeout(()=>document.getElementById('splash').classList.add('hide'),1400));
 
-/* ---------- Mobile menu ---------- */
-const ham=document.getElementById('hamburger'),mm=document.getElementById('mobileMenu');
-ham.addEventListener('click',()=>{ham.classList.toggle('open');mm.classList.toggle('show')});
-mm.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{ham.classList.remove('open');mm.classList.remove('show')}));
+/* ---------- Mobile side menu ---------- */
+const ham=document.getElementById('hamburger'),mm=document.getElementById('mobileMenu'),
+      overlay=document.getElementById('sideOverlay'),sideClose=document.getElementById('sideClose');
+function openMenu(){ham.classList.add('open');mm.classList.add('show');overlay.classList.add('show');mm.setAttribute('aria-hidden','false')}
+function closeMenu(){ham.classList.remove('open');mm.classList.remove('show');overlay.classList.remove('show');mm.setAttribute('aria-hidden','true')}
+ham.addEventListener('click',()=>{mm.classList.contains('show')?closeMenu():openMenu()});
+sideClose.addEventListener('click',closeMenu);
+overlay.addEventListener('click',closeMenu);
+mm.querySelectorAll('a').forEach(a=>a.addEventListener('click',closeMenu));
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu()});
 
 /* ---------- Reveal on scroll ---------- */
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.12});
@@ -29,12 +35,14 @@ document.getElementById('newsForm').addEventListener('submit',e=>{
   e.preventDefault();document.getElementById('newsNote').textContent='✓ Subscribed successfully!';e.target.reset();
 });
 
-/* ---------- Scroll spy (nav highlight) ---------- */
+/* ---------- Scroll spy (nav highlight: header + side menu + bottom nav) ---------- */
 const secs=[...document.querySelectorAll('section[id]')];
-const links=[...document.querySelectorAll('.nav-links a')];
-window.addEventListener('scroll',()=>{
-  const y=scrollY+120;
+const links=[...document.querySelectorAll('.nav-links a, .side-links a, .bottom-nav a')];
+function syncSpy(){
+  const y=scrollY+140;
   let cur=secs[0]?.id;
   secs.forEach(s=>{if(s.offsetTop<=y)cur=s.id});
   links.forEach(l=>l.classList.toggle('active',l.getAttribute('href')==='#'+cur));
-},{passive:true});
+}
+window.addEventListener('scroll',syncSpy,{passive:true});
+syncSpy();

@@ -21,7 +21,7 @@
   const thumbR = document.getElementById('aiThumbR');
   if (!goBtn) return;
 
-  const WA = '919876543210';
+  const WA = '916383134284';
   const THEMES = {
     wedding: 'elegant Indian wedding decoration: floral mandap-style backdrop, stage with fresh white and red roses, warm fairy lights, draped fabric, premium event styling',
     birthday: 'fun birthday party decoration: colorful balloon arch, balloon columns, themed backdrop with streamers, photo-zone corner, festive lighting',
